@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users collection
+    // Stores user profile information
+    match /users/{userId} {
+      // Users can read their own document
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Users can create their own document on first login
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.email == request.auth.token.email;
+
+      // Users can update their own document
+      allow update: if request.auth != null && request.auth.uid == userId;
+
+      // Prevent deletion (set to true if you want users to delete their accounts)
+      allow delete: if false;
+    }
+
+    // Camps collection
+    // Stores active blood donation camp sessions
+    match /camps/{campId} {
+      // Anyone authenticated can read active camps
+      allow read: if request.auth != null && resource.data.status == 'active';
+
+      // Only authenticated coordinators can create camps
+      allow create: if request.auth != null
+        && request.resource.data.coordinator_uid == request.auth.uid;
+
+      // Only the coordinator who created the camp can update or delete it
+      allow update, delete: if request.auth != null
+        && resource.data.coordinator_uid == request.auth.uid;
+    }
+
+    // Requests collection
+    // Stores blood requests from hospitals to specific camps
+    match /requests/{requestId} {
+      // Authenticated users can read all requests
+      allow read: if request.auth != null;
+
+      // Only authenticated users can create requests
+      allow create: if request.auth != null;
+
+      // Only authenticated users can update request status
+      allow update: if request.auth != null;
+
+      // Prevent deletion (set to true if needed)
+      allow delete: if false;
+    }
+  }
+}

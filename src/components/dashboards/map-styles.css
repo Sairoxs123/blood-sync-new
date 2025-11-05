@@ -1,0 +1,22 @@
+/* Ensure Leaflet map displays correctly */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+/* Fix for popup width */
+.leaflet-popup-content {
+  margin: 13px 19px;
+  line-height: 1.4;
+}
+
+/* Make markers clickable */
+.leaflet-marker-icon {
+  cursor: pointer;
+}
+
+/* Ensure tiles load properly */
+.leaflet-tile-container {
+  pointer-events: auto;
+}
