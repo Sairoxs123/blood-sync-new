@@ -12,7 +12,7 @@ import {
   query,
   where,
   doc,
-  deleteDoc
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { useAuth } from "../../utils/AuthContext";
@@ -72,10 +72,26 @@ export const HospitalDashboard = () => {
   const [urgent, setUrgent] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const { hospital, user } = useAuth();
+  const [disabled, setDisabled] = useState(false);
 
-  // Calculate distance between two points using Haversine formula
+  useEffect(() => {
+
+    if (selectedCamp && camps) {
+      const updated_selected_camp = camps.filter((val, idx) => val.id == selectedCamp.id)
+      const bloodtype_inventory = Object.entries(updated_selected_camp[0].inventory).filter(
+        ([bt, _]) => bt == bloodType
+      );
+      console.log(bloodtype_inventory)
+      if (Number(units) > bloodtype_inventory[0][1]) {
+        setDisabled(true);
+      } else {
+        setDisabled(false);
+      }
+    }
+  }, [bloodType, units, camps]);
+
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Earth's radius in km
+    const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
@@ -88,7 +104,6 @@ export const HospitalDashboard = () => {
     return R * c;
   };
 
-  // Get hospital location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -101,23 +116,24 @@ export const HospitalDashboard = () => {
         (error) => {
           console.error("Error getting location:", error);
           // Default to a location if geolocation fails
-          setHospitalLocation({ latitude: 20.5937, longitude: 78.9629 }); // Center of India
+          setHospitalLocation({ latitude: 20.5937, longitude: 78.9629 });
         }
       );
     }
   }, []);
 
   const handleDelete = async (id) => {
-    const docref = doc(db, "requests", id)
+    const docref = doc(db, "requests", id);
     try {
-      await deleteDoc(docref)
+      await deleteDoc(docref);
     } catch {
-      window.alert("Sorry an error occurred while trying to delete request. Please refresh the page and try again.")
+      window.alert(
+        "Sorry an error occurred while trying to delete request. Please refresh the page and try again."
+      );
     }
-  }
+  };
 
   useEffect(() => {
-    // Listener for active camps
     const campsQuery = query(
       collection(db, "camps"),
       where("status", "==", "active")
@@ -127,7 +143,6 @@ export const HospitalDashboard = () => {
       const campsData = snapshot.docs.map((doc) => {
         const data = { id: doc.id, ...doc.data() };
 
-        // Calculate distance if hospital location is available
         if (hospitalLocation) {
           data.distance = calculateDistance(
             hospitalLocation.latitude,
@@ -545,6 +560,7 @@ export const HospitalDashboard = () => {
                     setSelectedCamp(null);
                     setBloodType("O+");
                     setUnits("");
+                    setDisabled(false)
                     setUrgent(false);
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
@@ -553,7 +569,13 @@ export const HospitalDashboard = () => {
                 </button>
                 <button
                   onClick={createRequest}
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    disabled
+                      ? "bg-gray-400 cursor-not-allowed opacity-60"
+                      : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                  }`}
+                  disabled={disabled}
+                  title={disabled ? "This camp currently does not have enough units of the blood type and amount you requested." : null}
                 >
                   <Send className="inline h-4 w-4 mr-1" /> Submit Request
                 </button>
