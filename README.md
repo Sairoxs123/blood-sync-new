@@ -4,6 +4,20 @@ Blood Sync is a comprehensive web application designed to bridge the gap between
 
 🌐 **Live Demo**: [https://bloodsync.pages.dev/](https://bloodsync.pages.dev/)
 
+### 🧪 Test Accounts
+
+You can use the following credentials to test the application:
+
+- **NSS Coordinator**:
+  - **Email**: `Sai200727@gmail.com`
+  - **Password**: `Hello@123`
+
+- **Hospital**:
+  - **Email**: `stejas2706@gmail.com`
+  - **Password**: `Hello@123`
+
+---
+
 ## ✨ Core Features
 
 - **Role-Based Access**: Separate, tailored dashboards for **Hospitals** and **NSS Coordinators**.
@@ -195,18 +209,6 @@ You can use the following credentials to test the application:
   - Coordinators: To capture camp location
   - Hospitals: To calculate distances to camps and show hospital location
 
----
-
-## 🔒 Firebase Security Rules
-
-The project includes comprehensive Firestore security rules in `firestore.rules`:
-
-- **Users**: Can read/update their own profile
-- **Camps**: Authenticated users can read active camps; only coordinators can create/update their own camps
-- **Requests**: Authenticated users can create and read requests; users can delete their own requests
-- **Donors**: Authenticated users can read; only camp coordinators can create/edit/delete donor records for their camps
-
-Deploy rules using: `firebase deploy --only firestore:rules`
 
 ---
 
@@ -221,19 +223,6 @@ Deploy rules using: `firebase deploy --only firestore:rules`
 - Donor count badges
 - Past camp summary cards with analytics
 - Loading states and error handling
-
----
-
-## 🆕 Recent Updates
-
-- ✅ Complete donor management system with UUID generation
-- ✅ Edit and delete donor functionality
-- ✅ Real-time inventory updates based on donor records
-- ✅ Past camps history with comprehensive analytics
-- ✅ Camp archival system (inactive status instead of deletion)
-- ✅ Donor filtering by blood type
-- ✅ Enhanced Firebase security rules for donors collection
-- ✅ Inventory validation on hospital requests
 
 ---
 
@@ -253,11 +242,6 @@ Geolocation API is required and must be enabled in browser settings.
 - Ensure HTTPS in production
 - Check if location services are enabled on device
 
-### Requests not showing:
-- Verify camp is active (status: "active")
-- Check that request has correct `camp_id`
-- Ensure Firestore listeners are set up correctly
-
 ## 📱 Browser Support
 
 - Chrome 50+ ✅
@@ -267,41 +251,3 @@ Geolocation API is required and must be enabled in browser settings.
 
 Geolocation API is supported in all modern browsers.
 
-## 🚀 Deployment
-
-When deploying to production:
-
-1. **HTTPS Required**: Geolocation API requires secure context
-2. **Environment Variables**: Configure Firebase credentials
-3. **Map Tiles**: OpenStreetMap tiles load from CDN (ensure not blocked)
-4. **Firestore Indexes**: May need to create composite indexes based on queries
-
-## 📊 Performance Notes
-
-- Real-time listeners are used for camps and requests
-- Distance calculations happen client-side
-- Map renders all active camps (consider clustering for 50+ camps)
-- Inventory updates are immediate via Firestore listeners
-
-## 🔮 Future Enhancements
-
-- [ ] Camp history and analytics
-- [ ] Route optimization for deliveries
-- [ ] Push notifications for request updates
-- [ ] Volunteer management per camp
-- [ ] Appointment scheduling for donors
-- [ ] Export reports (CSV, PDF)
-- [ ] Multi-language support
-- [ ] Dark mode
-
-## 📄 License
-
-[Your License Here]
-
-## 👥 Contributors
-
-[Your Team Information]
-
----
-
-**Need Help?** Check `FIRESTORE_STRUCTURE.md` for database documentation or reach out to the development team.
